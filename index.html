@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="명함관리">
+<meta name="theme-color" content="#1D9E75">
+<link rel="manifest" href="./manifest.json">
+<title>명함 관리</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=DM+Mono:wght@500&display=swap');
+:root{
+  --bg:#F7F6F2;--sf:#fff;--bd:#E2E0D8;--bds:#C8C5BA;
+  --t:#1A1916;--t2:#6B6860;--t3:#9E9C96;
+  --teal:#1D9E75;--tl:#E1F5EE;--td:#085041;--tm:#0F6E56;
+  --kr:#C0392B;--krl:#FEF0EF;
+  --cn:#1565C0;--cnl:#EFF6FF;
+  --gl:#F1EFE8;--red:#DC2626;--rl:#FEF2F2;
+  --safe-top:env(safe-area-inset-top);
+  --safe-bot:env(safe-area-inset-bottom);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t);display:flex;flex-direction:column}
+
+/* 상단 헤더 */
+.hd{background:var(--teal);padding:calc(var(--safe-top) + 14px) 20px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hd-title{font-size:17px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.hd-sub{font-size:11px;color:rgba(255,255,255,.7);font-family:'DM Mono',monospace}
+
+/* 요약 바 */
+.sumbar{background:var(--teal);padding:0 20px 16px;display:flex;gap:10px;flex-shrink:0}
+.sc{background:rgba(255,255,255,.15);border-radius:10px;padding:10px 14px;flex:1;text-align:center}
+.sc-val{font-size:20px;font-weight:700;color:#fff}
+.sc-lbl{font-size:10px;color:rgba(255,255,255,.75);margin-top:2px}
+
+/* 탭 바 */
+.tabbar{background:var(--sf);border-bottom:1px solid var(--bd);display:flex;flex-shrink:0}
+.tb{flex:1;padding:12px 4px;font-size:12px;font-weight:500;color:var(--t2);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;font-family:'Noto Sans KR',sans-serif;transition:all .15s}
+.tb.on{color:var(--teal);border-bottom-color:var(--teal)}
+
+/* 스크롤 영역 */
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+
+/* 홈 탭 */
+.home-wrap{padding:16px}
+.scan-card{background:var(--sf);border-radius:16px;border:1px solid var(--bd);overflow:hidden;margin-bottom:14px}
+.scan-preview{width:100%;height:180px;object-fit:cover;background:var(--gl);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;cursor:pointer;position:relative}
+.scan-preview img{width:100%;height:100%;object-fit:cover}
+.scan-preview-empty{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--t3)}
+.scan-preview-icon{font-size:40px}
+.scan-preview-txt{font-size:13px;font-weight:500}
+.scan-preview-sub{font-size:11px}
+.scan-preview input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.scan-actions{padding:14px;display:flex;gap:8px}
+.sa-btn{flex:1;border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s}
+.sa-cam{background:var(--teal);color:#fff}
+.sa-cam:hover{background:var(--tm)}
+.sa-gal{background:var(--gl);color:var(--t)}
+.sa-gal:hover{background:var(--bd)}
+.sa-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* 진행 바 */
+.prog-card{background:var(--sf);border-radius:12px;border:1px solid var(--bd);padding:16px;margin-bottom:14px;display:none}
+.prog-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.prog-lbl{font-size:13px;font-weight:500}
+.prog-pct{font-size:12px;color:var(--teal);font-family:'DM Mono',monospace}
+.prog-bg{background:var(--gl);border-radius:4px;height:6px;overflow:hidden}
+.prog-fill{height:6px;background:var(--teal);border-radius:4px;transition:width .3s}
+
+/* 최근 명함 */
+.section-title{font-size:13px;font-weight:500;color:var(--t2);margin-bottom:10px}
+.recent-list{display:flex;flex-direction:column;gap:8px}
+
+/* 카드 아이템 */
+.ci{background:var(--sf);border-radius:12px;border:0.5px solid var(--bd);display:flex;align-items:center;gap:12px;padding:12px;overflow:hidden}
+.ci-img{width:52px;height:36px;border-radius:6px;object-fit:cover;background:var(--gl);flex-shrink:0;border:0.5px solid var(--bd)}
+.ci-body{flex:1;min-width:0}
+.ci-name{font-size:13px;font-weight:500;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci-sub{font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.ci-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0;font-family:'DM Mono',monospace}
+.badge-kr{background:var(--krl);color:var(--kr)}
+.badge-cn{background:var(--cnl);color:var(--cn)}
+.badge-etc{background:var(--gl);color:var(--t2)}
+
+/* 목록 탭 */
+.list-wrap{padding:14px}
+.search-bar{background:var(--sf);border:0.5px solid var(--bd);border-radius:10px;padding:10px 14px;font-size:13px;font-family:'Noto Sans KR',sans-serif;color:var(--t);width:100%;margin-bottom:12px}
+.search-bar:focus{outline:none;border-color:var(--teal)}
+.filter-row{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
+.filter-row::-webkit-scrollbar{display:none}
+.fpill{border:0.5px solid var(--bd);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:500;cursor:pointer;background:var(--sf);color:var(--t2);white-space:nowrap;font-family:'Noto Sans KR',sans-serif}
+.fpill.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.card-list{display:flex;flex-direction:column;gap:10px}
+
+/* 카드 상세 */
+.card-full{background:var(--sf);border-radius:14px;border:0.5px solid var(--bd);overflow:hidden}
+.cf-img{width:100%;height:140px;object-fit:cover;background:var(--gl)}
+.cf-body{padding:14px}
+.cf-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.cf-name{font-size:15px;font-weight:500}
+.cf-info{font-size:12px;color:var(--t2);line-height:1.8}
+.cf-row{display:flex;align-items:center;gap:6px}
+.cf-icon{font-size:14px;width:18px;flex-shrink:0}
+.cf-btns{display:flex;gap:6px;margin-top:12px;padding-top:12px;border-top:0.5px solid var(--bd)}
+.cfb{flex:1;border:none;border-radius:8px;padding:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+.cfb-edit{background:var(--gl);color:var(--t)}
+.cfb-del{background:var(--rl);color:var(--red)}
+
+/* 내보내기 탭 */
+.export-wrap{padding:16px}
+.exp-card{background:var(--sf);border-radius:14px;border:0.5px solid var(--bd);padding:18px;margin-bottom:12px}
+.exp-title{font-size:14px;font-weight:500;margin-bottom:4px}
+.exp-desc{font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.6}
+.exp-btn{width:100%;background:var(--teal);border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;color:#fff;font-family:'Noto Sans KR',sans-serif;cursor:pointer;margin-bottom:8px}
+.exp-btn:hover{background:var(--tm)}
+.exp-btn.outline{background:transparent;border:1px solid var(--teal);color:var(--teal)}
+
+/* 하단 네비 */
+.navbar{background:var(--sf);border-top:1px solid var(--bd);display:flex;padding-bottom:var(--safe-bot);flex-shrink:0}
+.nb{flex:1;padding:10px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:transparent;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+.nb-icon{font-size:22px;line-height:1}
+.nb-lbl{font-size:10px;color:var(--t3);font-weight:500}
+.nb.on .nb-lbl{color:var(--teal)}
+.nb.on .nb-icon{filter:none}
+
+/* 편집 시트 */
+.sheet-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:flex-end}
+.sheet-bg.on{display:flex}
+.sheet{background:var(--sf);border-radius:20px 20px 0 0;padding:20px 20px calc(20px + var(--safe-bot));width:100%;max-height:90vh;overflow-y:auto}
+.sheet-handle{width:36px;height:4px;background:var(--bd);border-radius:2px;margin:0 auto 16px}
+.sheet h3{font-size:16px;font-weight:500;margin-bottom:16px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11px;font-weight:500;color:var(--t2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.field input,.field select,.field textarea{width:100%;border:0.5px solid var(--bd);border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Noto Sans KR',sans-serif;color:var(--t);background:var(--sf)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--teal)}
+.field textarea{resize:none;height:60px}
+.sheet-btns{display:flex;gap:8px;margin-top:16px}
+.sbt{flex:1;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+.sbt-save{background:var(--teal);color:#fff}
+.sbt-cancel{background:var(--gl);color:var(--t)}
+
+/* 설치 배너 */
+.install-banner{background:var(--td);color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;display:none}
+.install-banner.on{display:flex}
+.ib-text{font-size:12px;line-height:1.5}
+.ib-btn{background:#fff;color:var(--td);border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;margin-left:10px}
+
+.empty{text-align:center;padding:48px 20px;color:var(--t3)}
+.empty-icon{font-size:40px;margin-bottom:10px}
+.empty-text{font-size:14px;margin-bottom:4px}
+.empty-sub{font-size:12px}
+</style>
+</head>
+<body>
+
+<!-- 설치 배너 -->
+<div class="install-banner" id="install-banner">
+  <div class="ib-text">홈화면에 추가하면 앱처럼 사용할 수 있어요</div>
+  <button class="ib-btn" id="install-btn">설치</button>
+</div>
+
+<!-- 헤더 -->
+<div class="hd">
+  <div>
+    <div class="hd-title">명함 관리</div>
+    <div class="hd-sub">BIZCARD MANAGER v1.0</div>
+  </div>
+</div>
+
+<!-- 요약 바 -->
+<div class="sumbar">
+  <div class="sc"><div class="sc-val" id="s-total">0</div><div class="sc-lbl">전체</div></div>
+  <div class="sc"><div class="sc-val" id="s-kr">0</div><div class="sc-lbl">한국</div></div>
+  <div class="sc"><div class="sc-val" id="s-cn">0</div><div class="sc-lbl">중국</div></div>
+  <div class="sc"><div class="sc-val" id="s-etc">0</div><div class="sc-lbl">미분류</div></div>
+</div>
+
+<!-- 스크롤 콘텐츠 -->
+<div class="scroll" id="scroll">
+
+  <!-- 홈 탭 -->
+  <div id="pg-home" class="home-wrap">
+    <div class="scan-card">
+      <div class="scan-preview" id="scan-preview">
+        <div class="scan-preview-empty" id="preview-empty">
+          <div class="scan-preview-icon">📷</div>
+          <div class="scan-preview-txt">명함 사진 업로드</div>
+          <div class="scan-preview-sub">탭해서 선택하거나 아래 버튼 사용</div>
+        </div>
+        <img id="preview-img" style="display:none;width:100%;height:100%;object-fit:cover">
+        <input type="file" accept="image/*" id="file-gallery" onchange="onGallery(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer">
+      </div>
+      <div class="scan-actions">
+        <button class="sa-btn sa-cam" onclick="openCamera()">카메라 촬영</button>
+        <button class="sa-btn sa-gal" onclick="document.getElementById('file-gallery').click()">갤러리 선택</button>
+      </div>
+    </div>
+
+    <div class="prog-card" id="prog-card">
+      <div class="prog-top">
+        <div class="prog-lbl" id="prog-lbl">OCR 처리 중...</div>
+        <div class="prog-pct" id="prog-pct">0%</div>
+      </div>
+      <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="section-title">최근 추가된 명함</div>
+    <div class="recent-list" id="recent-list"></div>
+  </div>
+
+  <!-- 목록 탭 -->
+  <div id="pg-list" class="list-wrap" style="display:none">
+    <input class="search-bar" placeholder="이름, 회사, 연락처 검색..." oninput="renderList()" id="search-inp">
+    <div class="filter-row">
+      <button class="fpill on" onclick="setFilter('all',this)">전체</button>
+      <button class="fpill" onclick="setFilter('kr',this)">한국 업체</button>
+      <button class="fpill" onclick="setFilter('cn',this)">중국 업체</button>
+      <button class="fpill" onclick="setFilter('etc',this)">미분류</button>
+    </div>
+    <div class="card-list" id="card-list"></div>
+  </div>
+
+  <!-- 내보내기 탭 -->
+  <div id="pg-export" class="export-wrap" style="display:none">
+    <div class="exp-card">
+      <div class="exp-title">엑셀 내보내기</div>
+      <div class="exp-desc">명함 정보를 엑셀 파일로 저장합니다.<br>분류별로 내보낼 수 있습니다.</div>
+      <button class="exp-btn" onclick="exportExcel('all')">전체 엑셀 다운로드</button>
+      <button class="exp-btn outline" onclick="exportExcel('kr')">한국 업체만</button>
+      <button class="exp-btn outline" onclick="exportExcel('cn')">중국 업체만</button>
+    </div>
+    <div class="exp-card">
+      <div class="exp-title">데이터 관리</div>
+      <div class="exp-desc">저장된 명함 데이터를 관리합니다.</div>
+      <button class="exp-btn outline" onclick="clearAll()" style="border-color:var(--red);color:var(--red)">전체 데이터 삭제</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- 하단 네비 -->
+<div class="navbar">
+  <button class="nb on" id="nb-home" onclick="switchPage('home')">
+    <div class="nb-icon">🏠</div>
+    <div class="nb-lbl">홈</div>
+  </button>
+  <button class="nb" id="nb-list" onclick="switchPage('list')">
+    <div class="nb-icon">📋</div>
+    <div class="nb-lbl">명함 목록</div>
+  </button>
+  <button class="nb" id="nb-export" onclick="switchPage('export')">
+    <div class="nb-icon">📊</div>
+    <div class="nb-lbl">내보내기</div>
+  </button>
+</div>
+
+<!-- 편집 시트 -->
+<div class="sheet-bg" id="sheet-bg" onclick="closeSheet(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>명함 정보 편집</h3>
+    <div class="field"><label>분류</label>
+      <select id="f-country">
+        <option value="kr">한국 업체</option>
+        <option value="cn">중국 업체</option>
+        <option value="etc">미분류</option>
+      </select>
+    </div>
+    <div class="field"><label>이름</label><input id="f-name" type="text" placeholder="홍길동"></div>
+    <div class="field"><label>회사</label><input id="f-company" type="text" placeholder="회사명"></div>
+    <div class="field"><label>직함</label><input id="f-title" type="text" placeholder="직함/부서"></div>
+    <div class="field"><label>전화</label><input id="f-phone" type="tel" placeholder="010-0000-0000"></div>
+    <div class="field"><label>이메일</label><input id="f-email" type="email" placeholder="email@company.com"></div>
+    <div class="field"><label>주소</label><textarea id="f-addr" placeholder="주소"></textarea></div>
+    <div class="sheet-btns">
+      <button class="sbt sbt-cancel" onclick="closeSheet()">취소</button>
+      <button class="sbt sbt-save" onclick="saveCard()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 카메라 입력 -->
+<input type="file" accept="image/*" capture="environment" id="file-camera" style="display:none" onchange="onCamera(this)">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const API_KEY = "K81432314688957";
+const API_URL = "https://api.ocr.space/parse/image";
+
+let cards = JSON.parse(localStorage.getItem("bizcards_pwa") || "[]");
+let editId = null;
+let curFilter = "all";
+let deferredPrompt = null;
+let pendingFile = null;
+
+// PWA 설치
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById("install-banner").classList.add("on");
+});
+document.getElementById("install-btn").onclick = async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const res = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById("install-banner").classList.remove("on");
+};
+
+// Service Worker 등록
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js").catch(() => {});
+}
+
+// ── 카메라
+function openCamera() {
+  document.getElementById("file-camera").click();
+}
+function onCamera(inp) {
+  if (inp.files[0]) processFile(inp.files[0]);
+  inp.value = "";
+}
+function onGallery(inp) {
+  if (inp.files[0]) processFile(inp.files[0]);
+  inp.value = "";
+}
+
+async function processFile(file) {
+  pendingFile = file;
+  const url = URL.createObjectURL(file);
+  document.getElementById("preview-empty").style.display = "none";
+  document.getElementById("preview-img").src = url;
+  document.getElementById("preview-img").style.display = "block";
+  await runOCRAndSave(file, url);
+}
+
+// ── OCR
+async function runOCRAndSave(file, imgUrl) {
+  const pc = document.getElementById("prog-card");
+  const pf = document.getElementById("prog-fill");
+  const pl = document.getElementById("prog-lbl");
+  const pp = document.getElementById("prog-pct");
+  pc.style.display = "block";
+  pf.style.width = "30%"; pp.textContent = "30%"; pl.textContent = "OCR 스캔 중...";
+
+  try {
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("apikey", API_KEY);
+    fd.append("language", "kor");
+    fd.append("isOverlayRequired", "false");
+    fd.append("detectOrientation", "true");
+    fd.append("scale", "true");
+
+    pf.style.width = "60%"; pp.textContent = "60%"; pl.textContent = "텍스트 추출 중...";
+    const res = await fetch(API_URL, { method: "POST", body: fd });
+    const data = await res.json();
+
+    pf.style.width = "80%"; pp.textContent = "80%"; pl.textContent = "정보 분석 중...";
+    const text = data.ParsedResults?.[0]?.ParsedText || "";
+    const parsed = parseCard(text);
+    const b64 = await fileToB64(file);
+
+    const card = {
+      id: Date.now() + Math.random(),
+      img: b64,
+      raw: text,
+      country: detectCountry(text),
+      name: parsed.name || "",
+      company: parsed.company || "",
+      title: parsed.title || "",
+      phone: parsed.phone || "",
+      email: parsed.email || "",
+      addr: parsed.addr || "",
+      date: new Date().toLocaleDateString("ko-KR")
+    };
+    cards.unshift(card);
+    saveStorage();
+
+    pf.style.width = "100%"; pp.textContent = "100%"; pl.textContent = "완료!";
+    setTimeout(() => {
+      pc.style.display = "none";
+      document.getElementById("preview-empty").style.display = "flex";
+      document.getElementById("preview-img").style.display = "none";
+      updateSummary();
+      renderRecent();
+      openEdit(card.id);
+    }, 800);
+  } catch (e) {
+    pl.textContent = "오류: " + e.message;
+    setTimeout(() => { pc.style.display = "none"; }, 2000);
+  }
+}
+
+// ── 파싱
+function parseCard(text) {
+  const lines = text.split(/\n/).map(l => l.trim()).filter(Boolean);
+  const phone = text.match(/[\d\-\+\(\)\s]{7,20}/g)?.[0]?.trim() || "";
+  const email = text.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/)?.[0] || "";
+  const titleKw = ["대표","이사","부장","팀장","과장","차장","사원","매니저","Director","Manager","CEO","부사장","본부장","사장","실장","主任","经理","总监","总裁"];
+  let name="",company="",title="",addr="";
+  for (const line of lines) {
+    if (!title && titleKw.some(k=>line.includes(k))) {title=line;continue;}
+    if (line.includes("@")) continue;
+    if (line.match(/^[\d\-\+\(\)\s]{7,}$/)) continue;
+    if (line.match(/(주소|address|路|街|号|区|市|省|道|번길|로 |대로)/i)) {addr=line;continue;}
+    if (!name && line.match(/^[가-힣]{2,5}$|^[A-Z][a-z]+ [A-Z][a-z]+$/)) {name=line;continue;}
+    if (!company && line.length>2) company=line;
+  }
+  return {name,company,title,phone,email,addr};
+}
+
+function detectCountry(text) {
+  const cn=(text.match(/[\u4e00-\u9fff]/g)||[]).length;
+  const kr=(text.match(/[가-힣]/g)||[]).length;
+  const cnDomain=/(\.cn|china|shenzhen|guangzhou|beijing|shanghai|深圳|广州|北京|上海)/i.test(text);
+  if (cnDomain||cn>kr*0.5) return "cn";
+  if (kr>0) return "kr";
+  return "etc";
+}
+
+function fileToB64(file) {
+  return new Promise(r=>{const rd=new FileReader();rd.onload=e=>r(e.target.result);rd.readAsDataURL(file);});
+}
+
+// ── 저장
+function saveStorage() {
+  try { localStorage.setItem("bizcards_pwa", JSON.stringify(cards)); } catch(e) {}
+}
+
+// ── 요약
+function updateSummary() {
+  document.getElementById("s-total").textContent = cards.length;
+  document.getElementById("s-kr").textContent = cards.filter(c=>c.country==="kr").length;
+  document.getElementById("s-cn").textContent = cards.filter(c=>c.country==="cn").length;
+  document.getElementById("s-etc").textContent = cards.filter(c=>c.country==="etc").length;
+}
+
+// ── 최근 목록
+function renderRecent() {
+  const el = document.getElementById("recent-list"); el.innerHTML = "";
+  const recent = cards.slice(0, 5);
+  if (!recent.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">아직 명함이 없어요</div><div class="empty-sub">카메라 또는 갤러리에서 추가하세요</div></div>`;
+    return;
+  }
+  recent.forEach(c => {
+    const badge = c.country==="kr"?"badge-kr":c.country==="cn"?"badge-cn":"badge-etc";
+    const badgeTxt = c.country==="kr"?"한국":c.country==="cn"?"중국":"미분류";
+    const d = document.createElement("div"); d.className="ci"; d.onclick=()=>openEdit(c.id);
+    d.innerHTML=`
+      ${c.img?`<img class="ci-img" src="${c.img}">`:`<div class="ci-img"></div>`}
+      <div class="ci-body">
+        <div class="ci-name">${c.name||c.company||"이름 없음"}</div>
+        <div class="ci-sub">${c.company||c.phone||c.email||""}</div>
+      </div>
+      <span class="ci-badge ${badge}">${badgeTxt}</span>
+    `;
+    el.appendChild(d);
+  });
+}
+
+// ── 전체 목록
+function setFilter(f, el) {
+  curFilter = f;
+  document.querySelectorAll(".fpill").forEach(p=>p.classList.remove("on"));
+  el.classList.add("on");
+  renderList();
+}
+
+function renderList() {
+  const el = document.getElementById("card-list"); el.innerHTML="";
+  const q = document.getElementById("search-inp").value.toLowerCase();
+  let filtered = cards;
+  if (curFilter!=="all") filtered = cards.filter(c=>c.country===curFilter);
+  if (q) filtered = filtered.filter(c=>[c.name,c.company,c.phone,c.email].some(v=>v?.toLowerCase().includes(q)));
+  if (!filtered.length) {
+    el.innerHTML=`<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">결과 없음</div></div>`;
+    return;
+  }
+  filtered.forEach(c => {
+    const badge=c.country==="kr"?"badge-kr":c.country==="cn"?"badge-cn":"badge-etc";
+    const badgeTxt=c.country==="kr"?"한국":c.country==="cn"?"중국":"미분류";
+    const d=document.createElement("div"); d.className="card-full";
+    d.innerHTML=`
+      ${c.img?`<img class="cf-img" src="${c.img}">`:`<div class="cf-img" style="height:80px"></div>`}
+      <div class="cf-body">
+        <div class="cf-top">
+          <div class="cf-name">${c.name||c.company||"이름 없음"}</div>
+          <span class="ci-badge ${badge}">${badgeTxt}</span>
+        </div>
+        <div class="cf-info">
+          ${c.company?`<div class="cf-row"><span class="cf-icon">🏢</span>${c.company}</div>`:""}
+          ${c.title?`<div class="cf-row"><span class="cf-icon">👤</span>${c.title}</div>`:""}
+          ${c.phone?`<div class="cf-row"><span class="cf-icon">📞</span>${c.phone}</div>`:""}
+          ${c.email?`<div class="cf-row"><span class="cf-icon">✉</span>${c.email}</div>`:""}
+          ${c.addr?`<div class="cf-row"><span class="cf-icon">📍</span>${c.addr}</div>`:""}
+        </div>
+        <div class="cf-btns">
+          <button class="cfb cfb-edit" onclick="openEdit('${c.id}')">편집</button>
+          <button class="cfb cfb-del" onclick="deleteCard('${c.id}')">삭제</button>
+        </div>
+      </div>
+    `;
+    el.appendChild(d);
+  });
+}
+
+// ── 편집 시트
+function openEdit(id) {
+  editId = id;
+  const c = cards.find(c=>String(c.id)===String(id));
+  if (!c) return;
+  document.getElementById("f-country").value=c.country||"etc";
+  document.getElementById("f-name").value=c.name||"";
+  document.getElementById("f-company").value=c.company||"";
+  document.getElementById("f-title").value=c.title||"";
+  document.getElementById("f-phone").value=c.phone||"";
+  document.getElementById("f-email").value=c.email||"";
+  document.getElementById("f-addr").value=c.addr||"";
+  document.getElementById("sheet-bg").classList.add("on");
+}
+
+function closeSheet(e) {
+  if (e && e.target !== document.getElementById("sheet-bg")) return;
+  document.getElementById("sheet-bg").classList.remove("on");
+  editId=null;
+}
+
+function saveCard() {
+  const c=cards.find(c=>String(c.id)===String(editId));
+  if (!c) return;
+  c.country=document.getElementById("f-country").value;
+  c.name=document.getElementById("f-name").value;
+  c.company=document.getElementById("f-company").value;
+  c.title=document.getElementById("f-title").value;
+  c.phone=document.getElementById("f-phone").value;
+  c.email=document.getElementById("f-email").value;
+  c.addr=document.getElementById("f-addr").value;
+  saveStorage(); updateSummary(); renderRecent(); renderList();
+  document.getElementById("sheet-bg").classList.remove("on");
+  editId=null;
+}
+
+function deleteCard(id) {
+  if (!confirm("이 명함을 삭제하시겠어요?")) return;
+  cards=cards.filter(c=>String(c.id)!==String(id));
+  saveStorage(); updateSummary(); renderRecent(); renderList();
+}
+
+// ── 엑셀
+function exportExcel(type) {
+  let data=cards;
+  if (type==="kr") data=cards.filter(c=>c.country==="kr");
+  if (type==="cn") data=cards.filter(c=>c.country==="cn");
+  if (!data.length) {alert("내보낼 데이터가 없습니다.");return;}
+  const rows=data.map(c=>({
+    "분류":c.country==="kr"?"한국":c.country==="cn"?"중국":"미분류",
+    "이름":c.name,"회사":c.company,"직함":c.title,
+    "전화":c.phone,"이메일":c.email,"주소":c.addr,"등록일":c.date
+  }));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"명함");
+  const label=type==="kr"?"한국":type==="cn"?"중국":"전체";
+  XLSX.writeFile(wb,`명함_${label}_${new Date().toLocaleDateString("ko-KR").replace(/\./g,"")}.xlsx`);
+}
+
+function clearAll() {
+  if (!confirm("모든 명함 데이터를 삭제하시겠어요?\n이 작업은 되돌릴 수 없습니다.")) return;
+  cards=[]; saveStorage(); updateSummary(); renderRecent(); renderList();
+}
+
+// ── 페이지 전환
+function switchPage(pg) {
+  ["home","list","export"].forEach(p=>{
+    document.getElementById("pg-"+p).style.display=p===pg?"block":"none";
+    document.getElementById("nb-"+p).classList.toggle("on",p===pg);
+  });
+  document.getElementById("scroll").scrollTop=0;
+  if (pg==="list") renderList();
+}
+
+// ── 초기화
+updateSummary();
+renderRecent();
+</script>
+</body>
+</html>
