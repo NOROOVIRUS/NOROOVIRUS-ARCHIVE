@@ -2,592 +2,925 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="명함관리">
-<meta name="theme-color" content="#1D9E75">
-<link rel="manifest" href="./manifest.json">
-<title>명함 관리</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>신제품 개발본부 대시보드</title>
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=DM+Mono:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap');
 :root{
-  --bg:#F7F6F2;--sf:#fff;--bd:#E2E0D8;--bds:#C8C5BA;
-  --t:#1A1916;--t2:#6B6860;--t3:#9E9C96;
-  --teal:#1D9E75;--tl:#E1F5EE;--td:#085041;--tm:#0F6E56;
-  --kr:#C0392B;--krl:#FEF0EF;
-  --cn:#1565C0;--cnl:#EFF6FF;
-  --gl:#F1EFE8;--red:#DC2626;--rl:#FEF2F2;
-  --safe-top:env(safe-area-inset-top);
-  --safe-bot:env(safe-area-inset-bottom);
+  --bg:#0F1117;--sf:#1A1D27;--sf2:#22263A;--bd:#2A2F45;--bds:#3A4060;
+  --t:#E8E9F0;--t2:#9095B0;--t3:#555A75;
+  --blue:#4A9EFF;--bl:#0D2A4A;
+  --teal:#1DD9A0;--tl:#0A2A1E;
+  --amber:#FFB830;--al:#2A1E00;
+  --red:#FF4A6E;--rl:#2A0A14;
+  --purple:#A78BFA;--pl:#1A0F35;
+  --green:#4ADE80;--gl:#0A2A15;
+  --r:8px;--rl2:12px;
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden}
-body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t);display:flex;flex-direction:column}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t);min-height:100vh}
 
-/* 상단 헤더 */
-.hd{background:var(--teal);padding:calc(var(--safe-top) + 14px) 20px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.hd-title{font-size:17px;font-weight:700;color:#fff;letter-spacing:-.3px}
-.hd-sub{font-size:11px;color:rgba(255,255,255,.7);font-family:'DM Mono',monospace}
+/* 헤더 */
+.hd{background:var(--sf);border-bottom:1px solid var(--bd);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.hd-left{display:flex;align-items:center;gap:12px}
+.hd-logo{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--teal);letter-spacing:.1em}
+.hd-title{font-size:15px;font-weight:700;color:var(--t)}
+.hd-date{font-size:11px;color:var(--t2);font-family:'DM Mono',monospace}
 
-/* 요약 바 */
-.sumbar{background:var(--teal);padding:0 20px 16px;display:flex;gap:10px;flex-shrink:0}
-.sc{background:rgba(255,255,255,.15);border-radius:10px;padding:10px 14px;flex:1;text-align:center}
-.sc-val{font-size:20px;font-weight:700;color:#fff}
-.sc-lbl{font-size:10px;color:rgba(255,255,255,.75);margin-top:2px}
+/* 사이드 네비 */
+.layout{display:flex;min-height:calc(100vh - 58px)}
+.sidenav{width:200px;background:var(--sf);border-right:1px solid var(--bd);padding:16px 0;flex-shrink:0;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto}
+.nav-section{padding:0 12px;margin-bottom:20px}
+.nav-label{font-size:10px;font-weight:500;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:500;color:var(--t2);transition:all .15s;border:none;background:transparent;width:100%;text-align:left;font-family:'Noto Sans KR',sans-serif}
+.nav-item:hover{background:var(--sf2);color:var(--t)}
+.nav-item.on{background:var(--bl);color:var(--blue)}
+.nav-item .ni{font-size:15px;width:20px;text-align:center}
+.nav-badge{margin-left:auto;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;background:var(--teal);color:#000;font-family:'DM Mono',monospace}
 
-/* 탭 바 */
-.tabbar{background:var(--sf);border-bottom:1px solid var(--bd);display:flex;flex-shrink:0}
-.tb{flex:1;padding:12px 4px;font-size:12px;font-weight:500;color:var(--t2);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;font-family:'Noto Sans KR',sans-serif;transition:all .15s}
-.tb.on{color:var(--teal);border-bottom-color:var(--teal)}
+/* 메인 */
+.main{flex:1;padding:24px;overflow-x:hidden}
+.page{display:none}.page.on{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
-/* 스크롤 영역 */
-.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+/* 공통 타이틀 */
+.page-title{font-size:20px;font-weight:700;margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--t2);margin-bottom:20px}
 
-/* 홈 탭 */
-.home-wrap{padding:16px}
-.scan-card{background:var(--sf);border-radius:16px;border:1px solid var(--bd);overflow:hidden;margin-bottom:14px}
-.scan-preview{width:100%;height:180px;object-fit:cover;background:var(--gl);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;cursor:pointer;position:relative}
-.scan-preview img{width:100%;height:100%;object-fit:cover}
-.scan-preview-empty{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--t3)}
-.scan-preview-icon{font-size:40px}
-.scan-preview-txt{font-size:13px;font-weight:500}
-.scan-preview-sub{font-size:11px}
-.scan-preview input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.scan-actions{padding:14px;display:flex;gap:8px}
-.sa-btn{flex:1;border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s}
-.sa-cam{background:var(--teal);color:#fff}
-.sa-cam:hover{background:var(--tm)}
-.sa-gal{background:var(--gl);color:var(--t)}
-.sa-gal:hover{background:var(--bd)}
-.sa-btn:disabled{opacity:.5;cursor:not-allowed}
+/* 요약 카드 그리드 */
+.sum-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:24px}
+.scard{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl2);padding:16px 18px}
+.sc-label{font-size:11px;color:var(--t2);margin-bottom:6px;font-family:'DM Mono',monospace}
+.sc-val{font-size:26px;font-weight:700}
+.sc-sub{font-size:11px;color:var(--t3);margin-top:3px}
 
-/* 진행 바 */
-.prog-card{background:var(--sf);border-radius:12px;border:1px solid var(--bd);padding:16px;margin-bottom:14px;display:none}
-.prog-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.prog-lbl{font-size:13px;font-weight:500}
-.prog-pct{font-size:12px;color:var(--teal);font-family:'DM Mono',monospace}
-.prog-bg{background:var(--gl);border-radius:4px;height:6px;overflow:hidden}
-.prog-fill{height:6px;background:var(--teal);border-radius:4px;transition:width .3s}
+/* 섹션 카드 */
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl2);padding:18px 20px;margin-bottom:14px}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-title{font-size:14px;font-weight:500;color:var(--t)}
+.card-action{font-size:12px;font-weight:500;color:var(--blue);cursor:pointer;background:none;border:none;font-family:'Noto Sans KR',sans-serif}
 
-/* 최근 명함 */
-.section-title{font-size:13px;font-weight:500;color:var(--t2);margin-bottom:10px}
-.recent-list{display:flex;flex-direction:column;gap:8px}
+/* 버튼 */
+.btn{border:none;border-radius:var(--r);padding:8px 16px;cursor:pointer;font-size:13px;font-weight:500;font-family:'Noto Sans KR',sans-serif;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{opacity:.85}
+.btn-teal{background:var(--teal);color:#000}
+.btn-teal:hover{opacity:.85}
+.btn-outline{background:transparent;border:1px solid var(--bd);color:var(--t2)}
+.btn-outline:hover{border-color:var(--bds);color:var(--t)}
+.btn-amber{background:var(--amber);color:#000}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 
-/* 카드 아이템 */
-.ci{background:var(--sf);border-radius:12px;border:0.5px solid var(--bd);display:flex;align-items:center;gap:12px;padding:12px;overflow:hidden}
-.ci-img{width:52px;height:36px;border-radius:6px;object-fit:cover;background:var(--gl);flex-shrink:0;border:0.5px solid var(--bd)}
-.ci-body{flex:1;min-width:0}
-.ci-name{font-size:13px;font-weight:500;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ci-sub{font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-.ci-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0;font-family:'DM Mono',monospace}
-.badge-kr{background:var(--krl);color:var(--kr)}
-.badge-cn{background:var(--cnl);color:var(--cn)}
-.badge-etc{background:var(--gl);color:var(--t2)}
+/* 테이블 */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 12px;color:var(--t2);font-weight:500;border-bottom:1px solid var(--bd);white-space:nowrap;font-size:12px}
+td{padding:10px 12px;border-bottom:1px solid var(--bd);color:var(--t);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--sf2)}
 
-/* 목록 탭 */
-.list-wrap{padding:14px}
-.search-bar{background:var(--sf);border:0.5px solid var(--bd);border-radius:10px;padding:10px 14px;font-size:13px;font-family:'Noto Sans KR',sans-serif;color:var(--t);width:100%;margin-bottom:12px}
-.search-bar:focus{outline:none;border-color:var(--teal)}
-.filter-row{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
-.filter-row::-webkit-scrollbar{display:none}
-.fpill{border:0.5px solid var(--bd);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:500;cursor:pointer;background:var(--sf);color:var(--t2);white-space:nowrap;font-family:'Noto Sans KR',sans-serif}
-.fpill.on{background:var(--teal);color:#fff;border-color:var(--teal)}
-.card-list{display:flex;flex-direction:column;gap:10px}
+/* 뱃지 */
+.badge{display:inline-flex;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;font-family:'DM Mono',monospace;white-space:nowrap}
+.b-blue{background:var(--bl);color:var(--blue)}
+.b-teal{background:var(--tl);color:var(--teal)}
+.b-amber{background:var(--al);color:var(--amber)}
+.b-red{background:var(--rl);color:var(--red)}
+.b-green{background:var(--gl);color:var(--green)}
+.b-purple{background:var(--pl);color:var(--purple)}
+.b-gray{background:var(--sf2);color:var(--t2)}
 
-/* 카드 상세 */
-.card-full{background:var(--sf);border-radius:14px;border:0.5px solid var(--bd);overflow:hidden}
-.cf-img{width:100%;height:140px;object-fit:cover;background:var(--gl)}
-.cf-body{padding:14px}
-.cf-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
-.cf-name{font-size:15px;font-weight:500}
-.cf-info{font-size:12px;color:var(--t2);line-height:1.8}
-.cf-row{display:flex;align-items:center;gap:6px}
-.cf-icon{font-size:14px;width:18px;flex-shrink:0}
-.cf-btns{display:flex;gap:6px;margin-top:12px;padding-top:12px;border-top:0.5px solid var(--bd)}
-.cfb{flex:1;border:none;border-radius:8px;padding:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
-.cfb-edit{background:var(--gl);color:var(--t)}
-.cfb-del{background:var(--rl);color:var(--red)}
+/* 플랫폼 탭 */
+.platform-tabs{display:flex;gap:6px;margin-bottom:16px}
+.ptab{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--bd);background:transparent;color:var(--t2);font-family:'Noto Sans KR',sans-serif;transition:all .15s}
+.ptab.on{border-color:var(--blue);background:var(--bl);color:var(--blue)}
 
-/* 내보내기 탭 */
-.export-wrap{padding:16px}
-.exp-card{background:var(--sf);border-radius:14px;border:0.5px solid var(--bd);padding:18px;margin-bottom:12px}
-.exp-title{font-size:14px;font-weight:500;margin-bottom:4px}
-.exp-desc{font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.6}
-.exp-btn{width:100%;background:var(--teal);border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;color:#fff;font-family:'Noto Sans KR',sans-serif;cursor:pointer;margin-bottom:8px}
-.exp-btn:hover{background:var(--tm)}
-.exp-btn.outline{background:transparent;border:1px solid var(--teal);color:var(--teal)}
+/* 카테고리 필터 */
+.cat-grid{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.cat-pill{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--bd);background:transparent;color:var(--t2);font-family:'Noto Sans KR',sans-serif;transition:all .15s}
+.cat-pill.on{border-color:var(--teal);background:var(--tl);color:var(--teal)}
 
-/* 하단 네비 */
-.navbar{background:var(--sf);border-top:1px solid var(--bd);display:flex;padding-bottom:var(--safe-bot);flex-shrink:0}
-.nb{flex:1;padding:10px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:transparent;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
-.nb-icon{font-size:22px;line-height:1}
-.nb-lbl{font-size:10px;color:var(--t3);font-weight:500}
-.nb.on .nb-lbl{color:var(--teal)}
-.nb.on .nb-icon{filter:none}
+/* 소싱 제품 카드 */
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.pcard{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rl2);padding:14px;position:relative}
+.pcard-rank{position:absolute;top:12px;right:12px;font-size:11px;font-weight:700;color:var(--amber);font-family:'DM Mono',monospace}
+.pcard-cat{font-size:10px;font-weight:700;color:var(--teal);margin-bottom:6px;font-family:'DM Mono',monospace;text-transform:uppercase}
+.pcard-name{font-size:13px;font-weight:500;color:var(--t);margin-bottom:8px;line-height:1.4;padding-right:36px}
+.pcard-price{font-size:16px;font-weight:700;color:var(--amber);margin-bottom:6px}
+.pcard-meta{font-size:11px;color:var(--t2);line-height:1.7}
+.pcard-actions{display:flex;gap:6px;margin-top:10px}
+.star-btn{background:none;border:1px solid var(--bd);border-radius:6px;padding:4px 8px;cursor:pointer;font-size:11px;color:var(--t2);font-family:'Noto Sans KR',sans-serif}
+.star-btn.starred{border-color:var(--amber);color:var(--amber);background:var(--al)}
 
-/* 편집 시트 */
-.sheet-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:flex-end}
-.sheet-bg.on{display:flex}
-.sheet{background:var(--sf);border-radius:20px 20px 0 0;padding:20px 20px calc(20px + var(--safe-bot));width:100%;max-height:90vh;overflow-y:auto}
-.sheet-handle{width:36px;height:4px;background:var(--bd);border-radius:2px;margin:0 auto 16px}
-.sheet h3{font-size:16px;font-weight:500;margin-bottom:16px}
+/* Claude 연동 박스 */
+.claude-box{background:var(--sf2);border:1px solid var(--blue);border-radius:var(--rl2);padding:16px;margin-bottom:16px}
+.claude-box-title{font-size:13px;font-weight:500;color:var(--blue);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.claude-box-desc{font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:12px}
+.prompt-preview{background:#0A0E1A;border-radius:var(--r);padding:10px 12px;font-family:'DM Mono',monospace;font-size:11px;color:#6EE7B7;line-height:1.7;max-height:80px;overflow:hidden;margin-bottom:10px}
+
+/* QC 업로드 */
+.upload-zone{border:2px dashed var(--bd);border-radius:var(--rl2);padding:28px;text-align:center;cursor:pointer;transition:all .15s;position:relative}
+.upload-zone:hover{border-color:var(--blue);background:var(--bl)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.uz-icon{font-size:28px;margin-bottom:8px;color:var(--t3)}
+.uz-text{font-size:13px;font-weight:500;color:var(--t2);margin-bottom:3px}
+.uz-sub{font-size:11px;color:var(--t3)}
+
+/* 인증 체크리스트 */
+.cert-list{display:flex;flex-direction:column;gap:8px}
+.cert-item{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:12px}
+.cert-cb{width:16px;height:16px;accent-color:var(--teal);cursor:pointer;flex-shrink:0}
+.cert-label{flex:1;font-size:13px;color:var(--t)}
+.cert-label span{font-size:11px;color:var(--t2);display:block;margin-top:2px;font-family:'DM Mono',monospace}
+.cert-status{font-size:11px;font-weight:500}
+
+/* 달력 */
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-head{font-size:11px;font-weight:500;color:var(--t3);text-align:center;padding:4px}
+.cal-day{background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:6px;min-height:60px;cursor:pointer;transition:all .15s;position:relative}
+.cal-day:hover{border-color:var(--bds)}
+.cal-day.has-event{border-color:var(--blue)}
+.cal-day.today{border-color:var(--teal)}
+.cal-num{font-size:12px;color:var(--t2);margin-bottom:4px;font-family:'DM Mono',monospace}
+.cal-day.today .cal-num{color:var(--teal);font-weight:700}
+.cal-event{font-size:9px;padding:2px 4px;border-radius:3px;margin-bottom:2px;line-height:1.3}
+.ev-sample{background:var(--bl);color:var(--blue)}
+.ev-pkg{background:var(--pl);color:var(--purple)}
+.ev-detail{background:var(--gl);color:var(--green)}
+.ev-qc{background:var(--al);color:var(--amber)}
+
+/* 사이클 진행바 */
+.cycle-item{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rl2);padding:14px 16px;margin-bottom:10px}
+.cycle-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cycle-name{font-size:13px;font-weight:500}
+.cycle-stages{display:flex;gap:0;margin-top:8px}
+.stage{flex:1;padding:6px 4px;text-align:center;font-size:10px;font-weight:500;border-right:1px solid var(--bd);position:relative}
+.stage:last-child{border-right:none}
+.stage-dot{width:8px;height:8px;border-radius:50%;background:var(--bd);margin:0 auto 4px}
+.stage.done .stage-dot{background:var(--teal)}
+.stage.active .stage-dot{background:var(--amber);box-shadow:0 0 0 3px rgba(255,184,48,.2)}
+.stage.done{color:var(--teal)}
+.stage.active{color:var(--amber)}
+
+/* 입력 필드 */
 .field{margin-bottom:12px}
-.field label{display:block;font-size:11px;font-weight:500;color:var(--t2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
-.field input,.field select,.field textarea{width:100%;border:0.5px solid var(--bd);border-radius:8px;padding:10px 12px;font-size:14px;font-family:'Noto Sans KR',sans-serif;color:var(--t);background:var(--sf)}
-.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--teal)}
-.field textarea{resize:none;height:60px}
-.sheet-btns{display:flex;gap:8px;margin-top:16px}
-.sbt{flex:1;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
-.sbt-save{background:var(--teal);color:#fff}
-.sbt-cancel{background:var(--gl);color:var(--t)}
+.field label{display:block;font-size:11px;font-weight:500;color:var(--t2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select,.field textarea{width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r);padding:9px 12px;font-size:13px;font-family:'Noto Sans KR',sans-serif;color:var(--t)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--blue)}
+.field textarea{resize:vertical;height:80px}
+.field select option{background:var(--sf2)}
 
-/* 설치 배너 */
-.install-banner{background:var(--td);color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;display:none}
-.install-banner.on{display:flex}
-.ib-text{font-size:12px;line-height:1.5}
-.ib-btn{background:#fff;color:var(--td);border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;margin-left:10px}
+/* 모달 */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center}
+.modal-bg.on{display:flex}
+.modal{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl2);padding:24px;width:480px;max-width:90vw;max-height:85vh;overflow-y:auto}
+.modal h3{font-size:16px;font-weight:500;margin-bottom:16px}
+.modal-btns{display:flex;gap:8px;margin-top:16px}
+.mbt{flex:1;border:none;border-radius:var(--r);padding:10px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+.mbt-save{background:var(--blue);color:#fff}
+.mbt-cancel{background:var(--sf2);color:var(--t2)}
 
-.empty{text-align:center;padding:48px 20px;color:var(--t3)}
-.empty-icon{font-size:40px;margin-bottom:10px}
-.empty-text{font-size:14px;margin-bottom:4px}
-.empty-sub{font-size:12px}
+.notice{background:var(--al);border:1px solid var(--amber);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--amber);line-height:1.6;margin-bottom:14px}
+.notice-blue{background:var(--bl);border:1px solid var(--blue);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--blue);line-height:1.6;margin-bottom:14px}
+.divider{height:1px;background:var(--bd);margin:16px 0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.empty{text-align:center;padding:32px;color:var(--t3);font-size:13px}
 </style>
 </head>
 <body>
 
-<!-- 설치 배너 -->
-<div class="install-banner" id="install-banner">
-  <div class="ib-text">홈화면에 추가하면 앱처럼 사용할 수 있어요</div>
-  <button class="ib-btn" id="install-btn">설치</button>
-</div>
-
-<!-- 헤더 -->
 <div class="hd">
-  <div>
-    <div class="hd-title">명함 관리</div>
-    <div class="hd-sub">BIZCARD MANAGER v1.0</div>
+  <div class="hd-left">
+    <div class="hd-logo">OA · R&D</div>
+    <div class="hd-title">신제품 개발본부 대시보드</div>
   </div>
+  <div class="hd-date" id="hd-date"></div>
 </div>
 
-<!-- 요약 바 -->
-<div class="sumbar">
-  <div class="sc"><div class="sc-val" id="s-total">0</div><div class="sc-lbl">전체</div></div>
-  <div class="sc"><div class="sc-val" id="s-kr">0</div><div class="sc-lbl">한국</div></div>
-  <div class="sc"><div class="sc-val" id="s-cn">0</div><div class="sc-lbl">중국</div></div>
-  <div class="sc"><div class="sc-val" id="s-etc">0</div><div class="sc-lbl">미분류</div></div>
-</div>
+<div class="layout">
 
-<!-- 스크롤 콘텐츠 -->
-<div class="scroll" id="scroll">
+  <!-- 사이드 네비 -->
+  <div class="sidenav">
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <button class="nav-item on" onclick="nav('overview')" id="nb-overview">
+        <span class="ni">📊</span> 전체 현황
+      </button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">소싱</div>
+      <button class="nav-item" onclick="nav('sourcing')" id="nb-sourcing">
+        <span class="ni">🔍</span> 소싱 리서치
+      </button>
+      <button class="nav-item" onclick="nav('shortlist')" id="nb-shortlist">
+        <span class="ni">⭐</span> 선정 제품
+        <span class="nav-badge" id="short-cnt">0</span>
+      </button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">품질</div>
+      <button class="nav-item" onclick="nav('qc1')" id="nb-qc1">
+        <span class="ni">📋</span> 1차 QC
+      </button>
+      <button class="nav-item" onclick="nav('qc2')" id="nb-qc2">
+        <span class="ni">✅</span> 2차 QC
+      </button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">인증 / 일정</div>
+      <button class="nav-item" onclick="nav('cert')" id="nb-cert">
+        <span class="ni">🏅</span> 인증 관리
+      </button>
+      <button class="nav-item" onclick="nav('schedule')" id="nb-schedule">
+        <span class="ni">📅</span> 일정 달력
+      </button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">제작</div>
+      <button class="nav-item" onclick="nav('package')" id="nb-package">
+        <span class="ni">📦</span> 패키지
+      </button>
+      <button class="nav-item" onclick="nav('detail')" id="nb-detail">
+        <span class="ni">🖼️</span> 상세페이지
+      </button>
+    </div>
+  </div>
 
-  <!-- 홈 탭 -->
-  <div id="pg-home" class="home-wrap">
-    <div class="scan-card">
-      <div class="scan-preview" id="scan-preview">
-        <div class="scan-preview-empty" id="preview-empty">
-          <div class="scan-preview-icon">📷</div>
-          <div class="scan-preview-txt">명함 사진 업로드</div>
-          <div class="scan-preview-sub">탭해서 선택하거나 아래 버튼 사용</div>
+  <!-- 메인 -->
+  <div class="main">
+
+    <!-- ── OVERVIEW ── -->
+    <div class="page on" id="pg-overview">
+      <div class="page-title">전체 현황</div>
+      <div class="page-sub">신제품 개발본부 제품 사이클 현황</div>
+
+      <div class="sum-grid">
+        <div class="scard"><div class="sc-label">진행중 제품</div><div class="sc-val" style="color:var(--blue)" id="ov-total">0</div><div class="sc-sub">전체 사이클</div></div>
+        <div class="scard"><div class="sc-label">소싱 단계</div><div class="sc-val" style="color:var(--teal)" id="ov-src">0</div><div class="sc-sub">리서치 중</div></div>
+        <div class="scard"><div class="sc-label">QC / 인증</div><div class="sc-val" style="color:var(--amber)" id="ov-qc">0</div><div class="sc-sub">검토 중</div></div>
+        <div class="scard"><div class="sc-label">제작 단계</div><div class="sc-val" style="color:var(--purple)" id="ov-make">0</div><div class="sc-sub">패키지·상세</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">제품 사이클 현황</div>
+          <button class="btn btn-sm btn-outline" onclick="openAddProduct()">+ 제품 추가</button>
         </div>
-        <img id="preview-img" style="display:none;width:100%;height:100%;object-fit:cover">
-        <input type="file" accept="image/*" id="file-gallery" onchange="onGallery(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer">
-      </div>
-      <div class="scan-actions">
-        <button class="sa-btn sa-cam" onclick="openCamera()">카메라 촬영</button>
-        <button class="sa-btn sa-gal" onclick="document.getElementById('file-gallery').click()">갤러리 선택</button>
+        <div id="cycle-list"><div class="empty">등록된 제품이 없어요. 제품을 추가해주세요.</div></div>
       </div>
     </div>
 
-    <div class="prog-card" id="prog-card">
-      <div class="prog-top">
-        <div class="prog-lbl" id="prog-lbl">OCR 처리 중...</div>
-        <div class="prog-pct" id="prog-pct">0%</div>
+    <!-- ── 소싱 ── -->
+    <div class="page" id="pg-sourcing">
+      <div class="page-title">소싱 리서치</div>
+      <div class="page-sub">Amazon · Rakuten · 拼多多 플랫폼 TOP 10 조사</div>
+
+      <div class="notice-blue">
+        💡 소싱 리서치는 Claude.ai에서 진행합니다. 아래 버튼으로 프롬프트를 생성하고 Claude.ai Project에 붙여넣으세요.
       </div>
-      <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">리서치 요청 생성</div></div>
+        <div class="g2" style="margin-bottom:12px">
+          <div class="field">
+            <label>카테고리 선택</label>
+            <select id="src-cat">
+              <option value="all">전체 (8개)</option>
+              <option>가습기</option><option>선풍기</option>
+              <option>구강세정기</option><option>안마기</option>
+              <option>조명</option><option>디퓨저</option>
+              <option>고데기</option><option>드라이기</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>플랫폼</label>
+            <select id="src-platform">
+              <option value="all">전체 3개 플랫폼</option>
+              <option>Amazon</option>
+              <option>Rakuten</option>
+              <option>拼多多 (Pinduoduo)</option>
+            </select>
+          </div>
+        </div>
+        <div class="prompt-preview" id="src-prompt-preview">프롬프트 미리보기...</div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="copySourcingPrompt()">📋 프롬프트 복사</button>
+          <button class="btn btn-teal" onclick="openClaude()">Claude.ai 열기 →</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">수집된 소싱 데이터</div>
+          <button class="btn btn-sm btn-outline" onclick="openAddSourcing()">+ 직접 입력</button>
+        </div>
+        <div class="platform-tabs">
+          <button class="ptab on" onclick="setSrcTab('all',this)">전체</button>
+          <button class="ptab" onclick="setSrcTab('Amazon',this)">Amazon</button>
+          <button class="ptab" onclick="setSrcTab('Rakuten',this)">Rakuten</button>
+          <button class="ptab" onclick="setSrcTab('Pinduoduo',this)">拼多多</button>
+        </div>
+        <div class="cat-grid" id="src-cat-filter"></div>
+        <div class="product-grid" id="product-grid">
+          <div class="empty" style="grid-column:1/-1">소싱 데이터를 입력하거나 Claude.ai에서 결과를 가져오세요.</div>
+        </div>
+      </div>
     </div>
 
-    <div class="section-title">최근 추가된 명함</div>
-    <div class="recent-list" id="recent-list"></div>
+    <!-- ── 선정 제품 ── -->
+    <div class="page" id="pg-shortlist">
+      <div class="page-title">선정 제품 (Best 1~3)</div>
+      <div class="page-sub">소싱에서 별표한 제품 중 최종 선정</div>
+      <div class="card">
+        <div class="product-grid" id="shortlist-grid">
+          <div class="empty" style="grid-column:1/-1">소싱 탭에서 제품에 별표를 눌러주세요.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 1차 QC ── -->
+    <div class="page" id="pg-qc1">
+      <div class="page-title">1차 QC 검토</div>
+      <div class="page-sub">QC 자료 업로드 → Claude.ai 검토 → 중국어 번역</div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">QC 문서 업로드</div></div>
+        <div class="field">
+          <label>대상 제품</label>
+          <select id="qc1-product"><option value="">제품 선택...</option></select>
+        </div>
+        <div class="upload-zone" id="qc1-zone">
+          <div class="uz-icon">📄</div>
+          <div class="uz-text">QC 자료 파일 업로드</div>
+          <div class="uz-sub">PDF · Word · Excel · 이미지 지원</div>
+          <input type="file" multiple accept=".pdf,.doc,.docx,.xlsx,.xls,.jpg,.png" onchange="onQC1File(this)">
+        </div>
+        <div id="qc1-files"></div>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn btn-primary" onclick="copyQC1Prompt()">📋 Claude 검토 프롬프트 복사</button>
+          <button class="btn btn-teal" onclick="openClaude()">Claude.ai 열기 →</button>
+        </div>
+      </div>
+
+      <div class="notice-blue">
+        Claude.ai에서 검토 완료 후 결과를 아래에 붙여넣으세요.
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">검토 결과 입력</div></div>
+        <div class="field">
+          <label>Claude 검토 결과 붙여넣기</label>
+          <textarea id="qc1-result" placeholder="Claude.ai에서 검토 결과를 복사해서 붙여넣으세요..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="saveQC1()">저장</button>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">QC 검토 이력</div></div>
+        <div id="qc1-history"><div class="empty">검토 이력이 없습니다.</div></div>
+      </div>
+    </div>
+
+    <!-- ── 2차 QC ── -->
+    <div class="page" id="pg-qc2">
+      <div class="page-title">2차 QC (인증 샘플 도착 후)</div>
+      <div class="page-sub">인증 샘플 도착 → 2차 QC 및 인증 데이터 요청</div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">2차 QC 대상</div></div>
+        <div id="qc2-list"><div class="empty">인증 샘플 도착 예정인 제품이 없습니다.</div></div>
+      </div>
+    </div>
+
+    <!-- ── 인증 ── -->
+    <div class="page" id="pg-cert">
+      <div class="page-title">인증 관리</div>
+      <div class="page-sub">인증팀 직접 입력 · 체크리스트 관리</div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">인증 항목 입력</div>
+          <button class="btn btn-sm btn-primary" onclick="openAddCert()">+ 인증 추가</button>
+        </div>
+        <div class="cert-list" id="cert-list">
+          <div class="empty">인증 항목을 추가해주세요.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 일정 달력 ── -->
+    <div class="page" id="pg-schedule">
+      <div class="page-title">일정 달력</div>
+      <div class="page-sub">샘플 도착 · 패키지 · 상세페이지 일정 관리</div>
+
+      <div class="card">
+        <div class="card-head">
+          <div style="display:flex;align-items:center;gap:12px">
+            <button class="btn btn-sm btn-outline" onclick="changeMonth(-1)">◀</button>
+            <div class="card-title" id="cal-month-title"></div>
+            <button class="btn btn-sm btn-outline" onclick="changeMonth(1)">▶</button>
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="openAddSchedule()">+ 일정 추가</button>
+        </div>
+        <div class="calendar-grid" id="cal-grid"></div>
+        <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+          <span style="font-size:11px;color:var(--t2);display:flex;align-items:center;gap:4px"><span class="cal-event ev-sample" style="border-radius:3px">●</span>샘플 도착</span>
+          <span style="font-size:11px;color:var(--t2);display:flex;align-items:center;gap:4px"><span class="cal-event ev-qc" style="border-radius:3px">●</span>QC</span>
+          <span style="font-size:11px;color:var(--t2);display:flex;align-items:center;gap:4px"><span class="cal-event ev-pkg" style="border-radius:3px">●</span>패키지</span>
+          <span style="font-size:11px;color:var(--t2);display:flex;align-items:center;gap:4px"><span class="cal-event ev-detail" style="border-radius:3px">●</span>상세페이지</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 패키지 ── -->
+    <div class="page" id="pg-package">
+      <div class="page-title">패키지 작업</div>
+      <div class="page-sub">제품별 패키지 작업 현황</div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">패키지 진행 현황</div>
+          <button class="btn btn-sm btn-primary" onclick="openAddPkg()">+ 추가</button>
+        </div>
+        <div id="pkg-list"><div class="empty">패키지 작업 항목이 없습니다.</div></div>
+      </div>
+    </div>
+
+    <!-- ── 상세페이지 ── -->
+    <div class="page" id="pg-detail">
+      <div class="page-title">상세페이지 작업</div>
+      <div class="page-sub">제품별 상세페이지 제작 현황</div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">상세페이지 진행 현황</div>
+          <button class="btn btn-sm btn-primary" onclick="openAddDetail()">+ 추가</button>
+        </div>
+        <div id="detail-list"><div class="empty">상세페이지 작업 항목이 없습니다.</div></div>
+      </div>
+    </div>
+
   </div>
-
-  <!-- 목록 탭 -->
-  <div id="pg-list" class="list-wrap" style="display:none">
-    <input class="search-bar" placeholder="이름, 회사, 연락처 검색..." oninput="renderList()" id="search-inp">
-    <div class="filter-row">
-      <button class="fpill on" onclick="setFilter('all',this)">전체</button>
-      <button class="fpill" onclick="setFilter('kr',this)">한국 업체</button>
-      <button class="fpill" onclick="setFilter('cn',this)">중국 업체</button>
-      <button class="fpill" onclick="setFilter('etc',this)">미분류</button>
-    </div>
-    <div class="card-list" id="card-list"></div>
-  </div>
-
-  <!-- 내보내기 탭 -->
-  <div id="pg-export" class="export-wrap" style="display:none">
-    <div class="exp-card">
-      <div class="exp-title">엑셀 내보내기</div>
-      <div class="exp-desc">명함 정보를 엑셀 파일로 저장합니다.<br>분류별로 내보낼 수 있습니다.</div>
-      <button class="exp-btn" onclick="exportExcel('all')">전체 엑셀 다운로드</button>
-      <button class="exp-btn outline" onclick="exportExcel('kr')">한국 업체만</button>
-      <button class="exp-btn outline" onclick="exportExcel('cn')">중국 업체만</button>
-    </div>
-    <div class="exp-card">
-      <div class="exp-title">데이터 관리</div>
-      <div class="exp-desc">저장된 명함 데이터를 관리합니다.</div>
-      <button class="exp-btn outline" onclick="clearAll()" style="border-color:var(--red);color:var(--red)">전체 데이터 삭제</button>
-    </div>
-  </div>
-
 </div>
 
-<!-- 하단 네비 -->
-<div class="navbar">
-  <button class="nb on" id="nb-home" onclick="switchPage('home')">
-    <div class="nb-icon">🏠</div>
-    <div class="nb-lbl">홈</div>
-  </button>
-  <button class="nb" id="nb-list" onclick="switchPage('list')">
-    <div class="nb-icon">📋</div>
-    <div class="nb-lbl">명함 목록</div>
-  </button>
-  <button class="nb" id="nb-export" onclick="switchPage('export')">
-    <div class="nb-icon">📊</div>
-    <div class="nb-lbl">내보내기</div>
-  </button>
-</div>
-
-<!-- 편집 시트 -->
-<div class="sheet-bg" id="sheet-bg" onclick="closeSheet(event)">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <h3>명함 정보 편집</h3>
-    <div class="field"><label>분류</label>
-      <select id="f-country">
-        <option value="kr">한국 업체</option>
-        <option value="cn">중국 업체</option>
-        <option value="etc">미분류</option>
+<!-- 제품 추가 모달 -->
+<div class="modal-bg" id="modal-product">
+  <div class="modal">
+    <h3>제품 추가</h3>
+    <div class="field"><label>제품명</label><input id="mp-name" placeholder="제품명 입력"></div>
+    <div class="field"><label>카테고리</label>
+      <select id="mp-cat">
+        <option>가습기</option><option>선풍기</option><option>구강세정기</option>
+        <option>안마기</option><option>조명</option><option>디퓨저</option>
+        <option>고데기</option><option>드라이기</option>
       </select>
     </div>
-    <div class="field"><label>이름</label><input id="f-name" type="text" placeholder="홍길동"></div>
-    <div class="field"><label>회사</label><input id="f-company" type="text" placeholder="회사명"></div>
-    <div class="field"><label>직함</label><input id="f-title" type="text" placeholder="직함/부서"></div>
-    <div class="field"><label>전화</label><input id="f-phone" type="tel" placeholder="010-0000-0000"></div>
-    <div class="field"><label>이메일</label><input id="f-email" type="email" placeholder="email@company.com"></div>
-    <div class="field"><label>주소</label><textarea id="f-addr" placeholder="주소"></textarea></div>
-    <div class="sheet-btns">
-      <button class="sbt sbt-cancel" onclick="closeSheet()">취소</button>
-      <button class="sbt sbt-save" onclick="saveCard()">저장</button>
+    <div class="field"><label>현재 단계</label>
+      <select id="mp-stage">
+        <option value="sourcing">소싱</option>
+        <option value="qc1">1차 QC</option>
+        <option value="cert">인증</option>
+        <option value="sample">샘플</option>
+        <option value="qc2">2차 QC</option>
+        <option value="package">패키지</option>
+        <option value="detail">상세페이지</option>
+      </select>
+    </div>
+    <div class="field"><label>예상 완료일</label><input id="mp-date" type="date"></div>
+    <div class="modal-btns">
+      <button class="mbt mbt-cancel" onclick="closeModal('modal-product')">취소</button>
+      <button class="mbt mbt-save" onclick="saveProduct()">저장</button>
     </div>
   </div>
 </div>
 
-<!-- 카메라 입력 -->
-<input type="file" accept="image/*" capture="environment" id="file-camera" style="display:none" onchange="onCamera(this)">
+<!-- 소싱 입력 모달 -->
+<div class="modal-bg" id="modal-sourcing">
+  <div class="modal">
+    <h3>소싱 데이터 입력</h3>
+    <div class="g2">
+      <div class="field"><label>카테고리</label>
+        <select id="ms-cat">
+          <option>가습기</option><option>선풍기</option><option>구강세정기</option>
+          <option>안마기</option><option>조명</option><option>디퓨저</option>
+          <option>고데기</option><option>드라이기</option>
+        </select>
+      </div>
+      <div class="field"><label>플랫폼</label>
+        <select id="ms-platform">
+          <option>Amazon</option><option>Rakuten</option><option>Pinduoduo</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>순위</label><input id="ms-rank" type="number" min="1" max="10" placeholder="1~10"></div>
+    <div class="field"><label>제품명</label><input id="ms-name" placeholder="제품명"></div>
+    <div class="field"><label>가격</label><input id="ms-price" placeholder="$29.99"></div>
+    <div class="field"><label>리뷰 수 / 평점</label><input id="ms-review" placeholder="1,234개 / 4.5★"></div>
+    <div class="field"><label>특이사항</label><textarea id="ms-note" placeholder="특이사항"></textarea></div>
+    <div class="modal-btns">
+      <button class="mbt mbt-cancel" onclick="closeModal('modal-sourcing')">취소</button>
+      <button class="mbt mbt-save" onclick="saveSourcing()">저장</button>
+    </div>
+  </div>
+</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- 인증 추가 모달 -->
+<div class="modal-bg" id="modal-cert">
+  <div class="modal">
+    <h3>인증 항목 추가</h3>
+    <div class="field"><label>제품명</label><input id="mc-product" placeholder="제품명"></div>
+    <div class="field"><label>인증 종류</label>
+      <select id="mc-type">
+        <option>KC 안전인증</option><option>EMC</option>
+        <option>KC + EMC</option><option>EMC + 무선인증</option>
+        <option>에너지소비효율</option><option>기타</option>
+      </select>
+    </div>
+    <div class="field"><label>필요 샘플 수</label><input id="mc-sample" type="number" placeholder="개수"></div>
+    <div class="field"><label>샘플 도착 예정일</label><input id="mc-date" type="date"></div>
+    <div class="field"><label>담당자</label><input id="mc-manager" placeholder="담당자명"></div>
+    <div class="field"><label>비고</label><textarea id="mc-note" placeholder="필요 자료 등"></textarea></div>
+    <div class="modal-btns">
+      <button class="mbt mbt-cancel" onclick="closeModal('modal-cert')">취소</button>
+      <button class="mbt mbt-save" onclick="saveCert()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 일정 추가 모달 -->
+<div class="modal-bg" id="modal-schedule">
+  <div class="modal">
+    <h3>일정 추가</h3>
+    <div class="field"><label>일정 종류</label>
+      <select id="msc-type">
+        <option value="sample">샘플 도착</option>
+        <option value="qc">QC</option>
+        <option value="package">패키지</option>
+        <option value="detail">상세페이지</option>
+      </select>
+    </div>
+    <div class="field"><label>제품명</label><input id="msc-product" placeholder="제품명"></div>
+    <div class="field"><label>날짜</label><input id="msc-date" type="date"></div>
+    <div class="field"><label>담당자</label><input id="msc-manager" placeholder="담당자명"></div>
+    <div class="field"><label>메모</label><textarea id="msc-note" placeholder="메모"></textarea></div>
+    <div class="modal-btns">
+      <button class="mbt mbt-cancel" onclick="closeModal('modal-schedule')">취소</button>
+      <button class="mbt mbt-save" onclick="saveSchedule()">저장</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const API_KEY = "K81432314688957";
-const API_URL = "https://api.ocr.space/parse/image";
+const CATS=["가습기","선풍기","구강세정기","안마기","조명","디퓨저","고데기","드라이기"];
+const PLATFORMS=["Amazon","Rakuten","Pinduoduo"];
+const STAGES=["sourcing","qc1","cert","sample","qc2","package","detail"];
+const STAGE_NAMES={sourcing:"소싱",qc1:"1차 QC",cert:"인증",sample:"샘플",qc2:"2차 QC",package:"패키지",detail:"상세페이지"};
 
-let cards = JSON.parse(localStorage.getItem("bizcards_pwa") || "[]");
-let editId = null;
-let curFilter = "all";
-let deferredPrompt = null;
-let pendingFile = null;
+let products=JSON.parse(localStorage.getItem("oa_products")||"[]");
+let sourcing=JSON.parse(localStorage.getItem("oa_sourcing")||"[]");
+let certs=JSON.parse(localStorage.getItem("oa_certs")||"[]");
+let schedules=JSON.parse(localStorage.getItem("oa_schedules")||"[]");
+let qc1history=JSON.parse(localStorage.getItem("oa_qc1")||"[]");
+let srcTab="all",srcCatFilter="all";
+let calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
 
-// PWA 설치
-window.addEventListener("beforeinstallprompt", e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  document.getElementById("install-banner").classList.add("on");
-});
-document.getElementById("install-btn").onclick = async () => {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  const res = await deferredPrompt.userChoice;
-  deferredPrompt = null;
-  document.getElementById("install-banner").classList.remove("on");
-};
-
-// Service Worker 등록
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js").catch(() => {});
+function save(){
+  localStorage.setItem("oa_products",JSON.stringify(products));
+  localStorage.setItem("oa_sourcing",JSON.stringify(sourcing));
+  localStorage.setItem("oa_certs",JSON.stringify(certs));
+  localStorage.setItem("oa_schedules",JSON.stringify(schedules));
+  localStorage.setItem("oa_qc1",JSON.stringify(qc1history));
 }
 
-// ── 카메라
-function openCamera() {
-  document.getElementById("file-camera").click();
-}
-function onCamera(inp) {
-  if (inp.files[0]) processFile(inp.files[0]);
-  inp.value = "";
-}
-function onGallery(inp) {
-  if (inp.files[0]) processFile(inp.files[0]);
-  inp.value = "";
-}
+// 날짜
+document.getElementById("hd-date").textContent=new Date().toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric",weekday:"short"});
 
-async function processFile(file) {
-  pendingFile = file;
-  const url = URL.createObjectURL(file);
-  document.getElementById("preview-empty").style.display = "none";
-  document.getElementById("preview-img").src = url;
-  document.getElementById("preview-img").style.display = "block";
-  await runOCRAndSave(file, url);
+// 네비
+function nav(pg){
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("on"));
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("on"));
+  document.getElementById("nb-"+pg).classList.add("on");
+  document.getElementById("pg-"+pg).classList.add("on");
+  if(pg==="overview") renderOverview();
+  if(pg==="sourcing") renderSourcing();
+  if(pg==="shortlist") renderShortlist();
+  if(pg==="cert") renderCerts();
+  if(pg==="schedule") renderCalendar();
+  if(pg==="package") renderPkg();
+  if(pg==="detail") renderDetail();
+  if(pg==="qc1") renderQC1();
+  if(pg==="qc2") renderQC2();
 }
 
-// ── OCR
-async function runOCRAndSave(file, imgUrl) {
-  const pc = document.getElementById("prog-card");
-  const pf = document.getElementById("prog-fill");
-  const pl = document.getElementById("prog-lbl");
-  const pp = document.getElementById("prog-pct");
-  pc.style.display = "block";
-  pf.style.width = "30%"; pp.textContent = "30%"; pl.textContent = "OCR 스캔 중...";
-
-  try {
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("apikey", API_KEY);
-    fd.append("language", "kor");
-    fd.append("isOverlayRequired", "false");
-    fd.append("detectOrientation", "true");
-    fd.append("scale", "true");
-
-    pf.style.width = "60%"; pp.textContent = "60%"; pl.textContent = "텍스트 추출 중...";
-    const res = await fetch(API_URL, { method: "POST", body: fd });
-    const data = await res.json();
-
-    pf.style.width = "80%"; pp.textContent = "80%"; pl.textContent = "정보 분석 중...";
-    const text = data.ParsedResults?.[0]?.ParsedText || "";
-    const parsed = parseCard(text);
-    const b64 = await fileToB64(file);
-
-    const card = {
-      id: Date.now() + Math.random(),
-      img: b64,
-      raw: text,
-      country: detectCountry(text),
-      name: parsed.name || "",
-      company: parsed.company || "",
-      title: parsed.title || "",
-      phone: parsed.phone || "",
-      email: parsed.email || "",
-      addr: parsed.addr || "",
-      date: new Date().toLocaleDateString("ko-KR")
-    };
-    cards.unshift(card);
-    saveStorage();
-
-    pf.style.width = "100%"; pp.textContent = "100%"; pl.textContent = "완료!";
-    setTimeout(() => {
-      pc.style.display = "none";
-      document.getElementById("preview-empty").style.display = "flex";
-      document.getElementById("preview-img").style.display = "none";
-      updateSummary();
-      renderRecent();
-      openEdit(card.id);
-    }, 800);
-  } catch (e) {
-    pl.textContent = "오류: " + e.message;
-    setTimeout(() => { pc.style.display = "none"; }, 2000);
-  }
-}
-
-// ── 파싱
-function parseCard(text) {
-  const lines = text.split(/\n/).map(l => l.trim()).filter(Boolean);
-  const phone = text.match(/[\d\-\+\(\)\s]{7,20}/g)?.[0]?.trim() || "";
-  const email = text.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/)?.[0] || "";
-  const titleKw = ["대표","이사","부장","팀장","과장","차장","사원","매니저","Director","Manager","CEO","부사장","본부장","사장","실장","主任","经理","总监","总裁"];
-  let name="",company="",title="",addr="";
-  for (const line of lines) {
-    if (!title && titleKw.some(k=>line.includes(k))) {title=line;continue;}
-    if (line.includes("@")) continue;
-    if (line.match(/^[\d\-\+\(\)\s]{7,}$/)) continue;
-    if (line.match(/(주소|address|路|街|号|区|市|省|道|번길|로 |대로)/i)) {addr=line;continue;}
-    if (!name && line.match(/^[가-힣]{2,5}$|^[A-Z][a-z]+ [A-Z][a-z]+$/)) {name=line;continue;}
-    if (!company && line.length>2) company=line;
-  }
-  return {name,company,title,phone,email,addr};
-}
-
-function detectCountry(text) {
-  const cn=(text.match(/[\u4e00-\u9fff]/g)||[]).length;
-  const kr=(text.match(/[가-힣]/g)||[]).length;
-  const cnDomain=/(\.cn|china|shenzhen|guangzhou|beijing|shanghai|深圳|广州|北京|上海)/i.test(text);
-  if (cnDomain||cn>kr*0.5) return "cn";
-  if (kr>0) return "kr";
-  return "etc";
-}
-
-function fileToB64(file) {
-  return new Promise(r=>{const rd=new FileReader();rd.onload=e=>r(e.target.result);rd.readAsDataURL(file);});
-}
-
-// ── 저장
-function saveStorage() {
-  try { localStorage.setItem("bizcards_pwa", JSON.stringify(cards)); } catch(e) {}
-}
-
-// ── 요약
-function updateSummary() {
-  document.getElementById("s-total").textContent = cards.length;
-  document.getElementById("s-kr").textContent = cards.filter(c=>c.country==="kr").length;
-  document.getElementById("s-cn").textContent = cards.filter(c=>c.country==="cn").length;
-  document.getElementById("s-etc").textContent = cards.filter(c=>c.country==="etc").length;
-}
-
-// ── 최근 목록
-function renderRecent() {
-  const el = document.getElementById("recent-list"); el.innerHTML = "";
-  const recent = cards.slice(0, 5);
-  if (!recent.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">아직 명함이 없어요</div><div class="empty-sub">카메라 또는 갤러리에서 추가하세요</div></div>`;
-    return;
-  }
-  recent.forEach(c => {
-    const badge = c.country==="kr"?"badge-kr":c.country==="cn"?"badge-cn":"badge-etc";
-    const badgeTxt = c.country==="kr"?"한국":c.country==="cn"?"중국":"미분류";
-    const d = document.createElement("div"); d.className="ci"; d.onclick=()=>openEdit(c.id);
-    d.innerHTML=`
-      ${c.img?`<img class="ci-img" src="${c.img}">`:`<div class="ci-img"></div>`}
-      <div class="ci-body">
-        <div class="ci-name">${c.name||c.company||"이름 없음"}</div>
-        <div class="ci-sub">${c.company||c.phone||c.email||""}</div>
-      </div>
-      <span class="ci-badge ${badge}">${badgeTxt}</span>
-    `;
-    el.appendChild(d);
-  });
-}
-
-// ── 전체 목록
-function setFilter(f, el) {
-  curFilter = f;
-  document.querySelectorAll(".fpill").forEach(p=>p.classList.remove("on"));
-  el.classList.add("on");
-  renderList();
-}
-
-function renderList() {
-  const el = document.getElementById("card-list"); el.innerHTML="";
-  const q = document.getElementById("search-inp").value.toLowerCase();
-  let filtered = cards;
-  if (curFilter!=="all") filtered = cards.filter(c=>c.country===curFilter);
-  if (q) filtered = filtered.filter(c=>[c.name,c.company,c.phone,c.email].some(v=>v?.toLowerCase().includes(q)));
-  if (!filtered.length) {
-    el.innerHTML=`<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">결과 없음</div></div>`;
-    return;
-  }
-  filtered.forEach(c => {
-    const badge=c.country==="kr"?"badge-kr":c.country==="cn"?"badge-cn":"badge-etc";
-    const badgeTxt=c.country==="kr"?"한국":c.country==="cn"?"중국":"미분류";
-    const d=document.createElement("div"); d.className="card-full";
-    d.innerHTML=`
-      ${c.img?`<img class="cf-img" src="${c.img}">`:`<div class="cf-img" style="height:80px"></div>`}
-      <div class="cf-body">
-        <div class="cf-top">
-          <div class="cf-name">${c.name||c.company||"이름 없음"}</div>
-          <span class="ci-badge ${badge}">${badgeTxt}</span>
+// ── OVERVIEW
+function renderOverview(){
+  document.getElementById("ov-total").textContent=products.length;
+  document.getElementById("ov-src").textContent=products.filter(p=>p.stage==="sourcing").length;
+  document.getElementById("ov-qc").textContent=products.filter(p=>["qc1","cert","sample","qc2"].includes(p.stage)).length;
+  document.getElementById("ov-make").textContent=products.filter(p=>["package","detail"].includes(p.stage)).length;
+  const el=document.getElementById("cycle-list");
+  if(!products.length){el.innerHTML='<div class="empty">등록된 제품이 없어요. 제품을 추가해주세요.</div>';return;}
+  el.innerHTML=products.map((p,i)=>{
+    const si=STAGES.indexOf(p.stage);
+    const stages=STAGES.map((s,j)=>`
+      <div class="stage ${j<si?"done":j===si?"active":""}">
+        <div class="stage-dot"></div>
+        <div>${STAGE_NAMES[s]}</div>
+      </div>`).join("");
+    const badgeColor=p.stage==="sourcing"?"b-blue":p.stage==="detail"?"b-green":"b-amber";
+    return`<div class="cycle-item">
+      <div class="cycle-top">
+        <div>
+          <span class="badge b-gray" style="margin-right:6px">${p.category}</span>
+          <span class="cycle-name">${p.name}</span>
         </div>
-        <div class="cf-info">
-          ${c.company?`<div class="cf-row"><span class="cf-icon">🏢</span>${c.company}</div>`:""}
-          ${c.title?`<div class="cf-row"><span class="cf-icon">👤</span>${c.title}</div>`:""}
-          ${c.phone?`<div class="cf-row"><span class="cf-icon">📞</span>${c.phone}</div>`:""}
-          ${c.email?`<div class="cf-row"><span class="cf-icon">✉</span>${c.email}</div>`:""}
-          ${c.addr?`<div class="cf-row"><span class="cf-icon">📍</span>${c.addr}</div>`:""}
-        </div>
-        <div class="cf-btns">
-          <button class="cfb cfb-edit" onclick="openEdit('${c.id}')">편집</button>
-          <button class="cfb cfb-del" onclick="deleteCard('${c.id}')">삭제</button>
+        <div style="display:flex;align-items:center;gap:8px">
+          ${p.dueDate?`<span style="font-size:11px;color:var(--t2)">완료예정 ${p.dueDate}</span>`:""}
+          <span class="badge ${badgeColor}">${STAGE_NAMES[p.stage]}</span>
+          <button class="btn btn-sm btn-outline" onclick="deleteProduct(${i})" style="color:var(--red);border-color:var(--red)">삭제</button>
         </div>
       </div>
-    `;
-    el.appendChild(d);
-  });
+      <div class="cycle-stages">${stages}</div>
+    </div>`;
+  }).join("");
 }
 
-// ── 편집 시트
-function openEdit(id) {
-  editId = id;
-  const c = cards.find(c=>String(c.id)===String(id));
-  if (!c) return;
-  document.getElementById("f-country").value=c.country||"etc";
-  document.getElementById("f-name").value=c.name||"";
-  document.getElementById("f-company").value=c.company||"";
-  document.getElementById("f-title").value=c.title||"";
-  document.getElementById("f-phone").value=c.phone||"";
-  document.getElementById("f-email").value=c.email||"";
-  document.getElementById("f-addr").value=c.addr||"";
-  document.getElementById("sheet-bg").classList.add("on");
+function openAddProduct(){
+  document.getElementById("mp-date").value="";
+  document.getElementById("modal-product").classList.add("on");
+}
+function saveProduct(){
+  const name=document.getElementById("mp-name").value.trim();
+  if(!name)return;
+  products.push({id:Date.now(),name,category:document.getElementById("mp-cat").value,stage:document.getElementById("mp-stage").value,dueDate:document.getElementById("mp-date").value});
+  save();renderOverview();updateProductSelects();closeModal("modal-product");
+}
+function deleteProduct(i){if(!confirm("삭제할까요?"))return;products.splice(i,1);save();renderOverview();}
+
+// ── 소싱
+function renderSourcing(){
+  updateSrcPrompt();
+  const cats=["all",...CATS];
+  document.getElementById("src-cat-filter").innerHTML=cats.map(c=>`<button class="cat-pill ${srcCatFilter===c?"on":""}" onclick="setSrcCat('${c}',this)">${c==="all"?"전체":c}</button>`).join("");
+  renderProductGrid();
+  document.getElementById("short-cnt").textContent=sourcing.filter(s=>s.starred).length;
 }
 
-function closeSheet(e) {
-  if (e && e.target !== document.getElementById("sheet-bg")) return;
-  document.getElementById("sheet-bg").classList.remove("on");
-  editId=null;
+function setSrcTab(t,el){srcTab=t;document.querySelectorAll(".ptab").forEach(p=>p.classList.remove("on"));el.classList.add("on");renderProductGrid();}
+function setSrcCat(c){srcCatFilter=c;renderSourcing();}
+
+function renderProductGrid(){
+  const g=document.getElementById("product-grid");
+  let data=sourcing;
+  if(srcTab!=="all") data=data.filter(s=>s.platform===srcTab);
+  if(srcCatFilter!=="all") data=data.filter(s=>s.category===srcCatFilter);
+  if(!data.length){g.innerHTML='<div class="empty" style="grid-column:1/-1">데이터 없음</div>';return;}
+  data.sort((a,b)=>a.rank-b.rank);
+  g.innerHTML=data.map((s,i)=>`
+    <div class="pcard">
+      <div class="pcard-rank">#${s.rank}</div>
+      <div class="pcard-cat">${s.category} · ${s.platform}</div>
+      <div class="pcard-name">${s.name}</div>
+      <div class="pcard-price">${s.price||"-"}</div>
+      <div class="pcard-meta">
+        ${s.review?"리뷰: "+s.review:""}
+        ${s.note?`<br>${s.note}`:""}
+      </div>
+      <div class="pcard-actions">
+        <button class="star-btn ${s.starred?"starred":""}" onclick="toggleStar(${sourcing.indexOf(s)})">${s.starred?"★ 선정됨":"☆ 선정하기"}</button>
+        <button class="star-btn" onclick="deleteSrc(${sourcing.indexOf(s)})" style="color:var(--red)">삭제</button>
+      </div>
+    </div>`).join("");
 }
 
-function saveCard() {
-  const c=cards.find(c=>String(c.id)===String(editId));
-  if (!c) return;
-  c.country=document.getElementById("f-country").value;
-  c.name=document.getElementById("f-name").value;
-  c.company=document.getElementById("f-company").value;
-  c.title=document.getElementById("f-title").value;
-  c.phone=document.getElementById("f-phone").value;
-  c.email=document.getElementById("f-email").value;
-  c.addr=document.getElementById("f-addr").value;
-  saveStorage(); updateSummary(); renderRecent(); renderList();
-  document.getElementById("sheet-bg").classList.remove("on");
-  editId=null;
+function toggleStar(i){sourcing[i].starred=!sourcing[i].starred;save();renderSourcing();renderShortlist();}
+function deleteSrc(i){if(!confirm("삭제?"))return;sourcing.splice(i,1);save();renderSourcing();}
+
+function renderShortlist(){
+  const g=document.getElementById("shortlist-grid");
+  const data=sourcing.filter(s=>s.starred);
+  document.getElementById("short-cnt").textContent=data.length;
+  if(!data.length){g.innerHTML='<div class="empty" style="grid-column:1/-1">소싱 탭에서 별표를 눌러주세요.</div>';return;}
+  g.innerHTML=data.map((s,i)=>`
+    <div class="pcard" style="border-color:var(--amber)">
+      <div class="pcard-rank" style="color:var(--teal)">★ 선정</div>
+      <div class="pcard-cat">${s.category} · ${s.platform} · #${s.rank}</div>
+      <div class="pcard-name">${s.name}</div>
+      <div class="pcard-price">${s.price||"-"}</div>
+      <div class="pcard-meta">${s.review||""}</div>
+    </div>`).join("");
 }
 
-function deleteCard(id) {
-  if (!confirm("이 명함을 삭제하시겠어요?")) return;
-  cards=cards.filter(c=>String(c.id)!==String(id));
-  saveStorage(); updateSummary(); renderRecent(); renderList();
+function updateSrcPrompt(){
+  const cat=document.getElementById("src-cat").value;
+  const platform=document.getElementById("src-platform").value;
+  const catTxt=cat==="all"?"가습기, 선풍기, 구강세정기, 안마기, 조명, 디퓨저, 고데기, 드라이기":cat;
+  const platTxt=platform==="all"?"Amazon, Rakuten, 拼多多(Pinduoduo)":platform;
+  document.getElementById("src-prompt-preview").textContent=
+    `아래 카테고리의 ${platTxt} 플랫폼 베스트셀러 TOP 10을 조사해줘.\n카테고리: ${catTxt}\n\n각 제품마다: 순위, 제품명, 가격, 리뷰수/평점, 특이사항을 표로 정리해줘.`;
 }
 
-// ── 엑셀
-function exportExcel(type) {
-  let data=cards;
-  if (type==="kr") data=cards.filter(c=>c.country==="kr");
-  if (type==="cn") data=cards.filter(c=>c.country==="cn");
-  if (!data.length) {alert("내보낼 데이터가 없습니다.");return;}
-  const rows=data.map(c=>({
-    "분류":c.country==="kr"?"한국":c.country==="cn"?"중국":"미분류",
-    "이름":c.name,"회사":c.company,"직함":c.title,
-    "전화":c.phone,"이메일":c.email,"주소":c.addr,"등록일":c.date
-  }));
-  const ws=XLSX.utils.json_to_sheet(rows);
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,"명함");
-  const label=type==="kr"?"한국":type==="cn"?"중국":"전체";
-  XLSX.writeFile(wb,`명함_${label}_${new Date().toLocaleDateString("ko-KR").replace(/\./g,"")}.xlsx`);
+document.getElementById("src-cat").addEventListener("change",updateSrcPrompt);
+document.getElementById("src-platform").addEventListener("change",updateSrcPrompt);
+
+function copySourcingPrompt(){
+  const txt=document.getElementById("src-prompt-preview").textContent;
+  navigator.clipboard.writeText(txt).then(()=>alert("프롬프트 복사됨! Claude.ai에 붙여넣으세요."));
 }
 
-function clearAll() {
-  if (!confirm("모든 명함 데이터를 삭제하시겠어요?\n이 작업은 되돌릴 수 없습니다.")) return;
-  cards=[]; saveStorage(); updateSummary(); renderRecent(); renderList();
+function openClaude(){window.open("https://claude.ai","_blank");}
+
+function openAddSourcing(){document.getElementById("modal-sourcing").classList.add("on");}
+function saveSourcing(){
+  const name=document.getElementById("ms-name").value.trim();
+  if(!name)return;
+  sourcing.push({id:Date.now(),category:document.getElementById("ms-cat").value,platform:document.getElementById("ms-platform").value,rank:parseInt(document.getElementById("ms-rank").value)||1,name,price:document.getElementById("ms-price").value,review:document.getElementById("ms-review").value,note:document.getElementById("ms-note").value,starred:false});
+  save();renderSourcing();closeModal("modal-sourcing");
 }
 
-// ── 페이지 전환
-function switchPage(pg) {
-  ["home","list","export"].forEach(p=>{
-    document.getElementById("pg-"+p).style.display=p===pg?"block":"none";
-    document.getElementById("nb-"+p).classList.toggle("on",p===pg);
-  });
-  document.getElementById("scroll").scrollTop=0;
-  if (pg==="list") renderList();
+// ── QC1
+function onQC1File(inp){
+  const el=document.getElementById("qc1-files");
+  const files=Array.from(inp.files);
+  el.innerHTML=files.map(f=>`<div style="font-size:12px;color:var(--teal);padding:4px 0;border-bottom:1px solid var(--bd)">📄 ${f.name}</div>`).join("");
+}
+
+function copyQC1Prompt(){
+  const product=document.getElementById("qc1-product").value||"선택된 제품";
+  const prompt=`다음은 ${product}의 1차 QC 자료입니다.\n\n아래 항목을 검토해주세요:\n1. 필수 QC 항목 누락 여부 (정격전압, 사용시간, 충전시간 등)\n2. 다른 동종 업체 기준과 비교해 부족한 항목\n3. 전체 내용을 한국어 → 중국어로 번역해서 표로 정리\n\n업로드된 파일을 기준으로 검토해주세요.`;
+  navigator.clipboard.writeText(prompt).then(()=>alert("프롬프트 복사됨!"));
+}
+
+function saveQC1(){
+  const result=document.getElementById("qc1-result").value.trim();
+  if(!result)return;
+  qc1history.push({id:Date.now(),date:new Date().toLocaleDateString("ko-KR"),product:document.getElementById("qc1-product").value||"미지정",result});
+  save();renderQC1();document.getElementById("qc1-result").value="";
+}
+
+function renderQC1(){
+  const el=document.getElementById("qc1-history");
+  if(!qc1history.length){el.innerHTML='<div class="empty">검토 이력 없음</div>';return;}
+  el.innerHTML=`<div class="tbl-wrap"><table><thead><tr><th>날짜</th><th>제품</th><th>요약</th></tr></thead><tbody>${
+    qc1history.map(q=>`<tr><td>${q.date}</td><td>${q.product}</td><td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${q.result.slice(0,80)}...</td></tr>`).join("")
+  }</tbody></table></div>`;
+}
+
+function renderQC2(){
+  const el=document.getElementById("qc2-list");
+  const data=certs.filter(c=>c.sampleDate);
+  if(!data.length){el.innerHTML='<div class="empty">인증 샘플 도착 예정인 제품이 없습니다.</div>';return;}
+  el.innerHTML=data.map(c=>`
+    <div class="cycle-item">
+      <div class="cycle-top">
+        <div><span class="cycle-name">${c.product}</span> <span class="badge b-blue">${c.type}</span></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;color:var(--t2)">샘플 도착: ${c.sampleDate}</span>
+          <button class="btn btn-sm btn-teal" onclick="copyQC2Prompt('${c.product}')">2차 QC 요청</button>
+        </div>
+      </div>
+    </div>`).join("");
+}
+
+function copyQC2Prompt(product){
+  const prompt=`${product} 인증 샘플이 도착했습니다.\n2차 QC 및 인증 데이터 검토를 요청드립니다.\n\n확인 항목:\n1. 인증 기준 충족 여부\n2. 추가 필요 서류\n3. 보완 사항`;
+  navigator.clipboard.writeText(prompt).then(()=>alert("2차 QC 프롬프트 복사됨!"));
+}
+
+// ── 인증
+function openAddCert(){document.getElementById("modal-cert").classList.add("on");}
+function saveCert(){
+  const product=document.getElementById("mc-product").value.trim();
+  if(!product)return;
+  certs.push({id:Date.now(),product,type:document.getElementById("mc-type").value,sampleCount:document.getElementById("mc-sample").value,sampleDate:document.getElementById("mc-date").value,manager:document.getElementById("mc-manager").value,note:document.getElementById("mc-note").value,done:false});
+  save();renderCerts();closeModal("modal-cert");
+}
+
+function renderCerts(){
+  const el=document.getElementById("cert-list");
+  if(!certs.length){el.innerHTML='<div class="empty">인증 항목 없음</div>';return;}
+  el.innerHTML=certs.map((c,i)=>`
+    <div class="cert-item">
+      <input type="checkbox" class="cert-cb" ${c.done?"checked":""} onchange="toggleCert(${i})">
+      <div class="cert-label">
+        <strong>${c.product}</strong> — ${c.type}
+        <span>샘플 ${c.sampleCount||"-"}개 · 도착예정: ${c.sampleDate||"-"} · 담당: ${c.manager||"-"}</span>
+        ${c.note?`<span style="color:var(--t3)">${c.note}</span>`:""}
+      </div>
+      <span class="badge ${c.done?"b-green":"b-amber"}">${c.done?"완료":"진행중"}</span>
+      <button class="btn btn-sm btn-outline" onclick="deleteCert(${i})" style="color:var(--red)">삭제</button>
+    </div>`).join("");
+}
+
+function toggleCert(i){certs[i].done=!certs[i].done;save();renderCerts();}
+function deleteCert(i){if(!confirm("삭제?"))return;certs.splice(i,1);save();renderCerts();}
+
+// ── 달력
+function renderCalendar(){
+  const title=`${calYear}년 ${calMonth+1}월`;
+  document.getElementById("cal-month-title").textContent=title;
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const lastDate=new Date(calYear,calMonth+1,0).getDate();
+  const today=new Date();
+  const days=["일","월","화","수","목","금","토"];
+  let html=days.map(d=>`<div class="cal-head">${d}</div>`).join("");
+  for(let i=0;i<firstDay;i++) html+=`<div class="cal-day" style="opacity:.2"></div>`;
+  for(let d=1;d<=lastDate;d++){
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const isToday=today.getFullYear()===calYear&&today.getMonth()===calMonth&&today.getDate()===d;
+    const dayEvents=schedules.filter(s=>s.date===dateStr);
+    const evHtml=dayEvents.map(e=>`<div class="cal-event ev-${e.type}" title="${e.product}">${e.product.slice(0,4)}</div>`).join("");
+    html+=`<div class="cal-day ${isToday?"today":""} ${dayEvents.length?"has-event":""}">
+      <div class="cal-num">${d}</div>${evHtml}
+    </div>`;
+  }
+  document.getElementById("cal-grid").innerHTML=html;
+}
+
+function changeMonth(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++;}if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+
+function openAddSchedule(){document.getElementById("modal-schedule").classList.add("on");}
+function saveSchedule(){
+  const product=document.getElementById("msc-product").value.trim();
+  const date=document.getElementById("msc-date").value;
+  if(!product||!date)return;
+  schedules.push({id:Date.now(),type:document.getElementById("msc-type").value,product,date,manager:document.getElementById("msc-manager").value,note:document.getElementById("msc-note").value});
+  save();renderCalendar();closeModal("modal-schedule");
+}
+
+// ── 패키지 / 상세
+function renderPkg(){
+  const el=document.getElementById("pkg-list");
+  const data=schedules.filter(s=>s.type==="package");
+  if(!data.length){el.innerHTML='<div class="empty">패키지 일정 없음. 달력에서 추가하세요.</div>';return;}
+  el.innerHTML=`<div class="tbl-wrap"><table><thead><tr><th>제품</th><th>일정</th><th>담당자</th><th>메모</th></tr></thead><tbody>${
+    data.map(s=>`<tr><td>${s.product}</td><td>${s.date}</td><td>${s.manager||"-"}</td><td>${s.note||"-"}</td></tr>`).join("")
+  }</tbody></table></div>`;
+}
+
+function renderDetail(){
+  const el=document.getElementById("detail-list");
+  const data=schedules.filter(s=>s.type==="detail");
+  if(!data.length){el.innerHTML='<div class="empty">상세페이지 일정 없음. 달력에서 추가하세요.</div>';return;}
+  el.innerHTML=`<div class="tbl-wrap"><table><thead><tr><th>제품</th><th>일정</th><th>담당자</th><th>메모</th></tr></thead><tbody>${
+    data.map(s=>`<tr><td>${s.product}</td><td>${s.date}</td><td>${s.manager||"-"}</td><td>${s.note||"-"}</td></tr>`).join("")
+  }</tbody></table></div>`;
+}
+
+function openAddPkg(){nav("schedule");}
+function openAddDetail(){nav("schedule");}
+
+// ── 공통
+function closeModal(id){document.getElementById(id).classList.remove("on");}
+document.querySelectorAll(".modal-bg").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("on");}));
+
+function updateProductSelects(){
+  const opts=`<option value="">제품 선택...</option>${products.map(p=>`<option>${p.name}</option>`).join("")}`;
+  document.getElementById("qc1-product").innerHTML=opts;
 }
 
 // ── 초기화
-updateSummary();
-renderRecent();
+renderOverview();
+updateProductSelects();
+renderCalendar();
+updateSrcPrompt();
+
+// ── 비밀번호 잠금
+(function(){
+  const PW="6697";
+  const KEY="oa_auth";
+  if(sessionStorage.getItem(KEY)===PW) return;
+  const lock=document.createElement("div");
+  lock.id="pw-lock";
+  lock.style.cssText="position:fixed;inset:0;background:#0F1117;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column";
+  lock.innerHTML=`
+    <div style="font-family:'DM Mono',monospace;font-size:13px;color:#1DD9A0;letter-spacing:.1em;margin-bottom:20px">OA · R&D DASHBOARD</div>
+    <div style="background:#1A1D27;border:1px solid #2A2F45;border-radius:12px;padding:32px;width:300px;text-align:center">
+      <div style="font-size:32px;margin-bottom:14px">🔒</div>
+      <div style="font-size:15px;font-weight:700;color:#E8E9F0;margin-bottom:6px">접근 제한</div>
+      <div style="font-size:12px;color:#9095B0;margin-bottom:20px">비밀번호를 입력하세요</div>
+      <input id="pw-input" type="password" maxlength="10" placeholder="비밀번호"
+        style="width:100%;background:#22263A;border:1px solid #3A4060;border-radius:8px;padding:11px 14px;font-size:18px;color:#E8E9F0;text-align:center;letter-spacing:.3em;outline:none;font-family:monospace"
+        onkeydown="if(event.key==='Enter')checkPW()">
+      <div id="pw-err" style="font-size:12px;color:#FF4A6E;margin-top:8px;min-height:18px"></div>
+      <button onclick="checkPW()"
+        style="margin-top:10px;width:100%;background:#1DD9A0;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;color:#000;cursor:pointer;font-family:'Noto Sans KR',sans-serif">
+        입장하기
+      </button>
+    </div>
+  `;
+  document.body.appendChild(lock);
+  setTimeout(()=>document.getElementById("pw-input")?.focus(),200);
+  window.checkPW=function(){
+    const val=document.getElementById("pw-input").value;
+    if(val===PW){
+      sessionStorage.setItem(KEY,PW);
+      document.getElementById("pw-lock").remove();
+    } else {
+      document.getElementById("pw-err").textContent="비밀번호가 틀렸습니다.";
+      document.getElementById("pw-input").value="";
+      document.getElementById("pw-input").focus();
+    }
+  };
+})();
 </script>
 </body>
 </html>
